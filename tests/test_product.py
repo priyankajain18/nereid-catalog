@@ -485,6 +485,33 @@ class TestProduct(NereidTestCase):
 
             self.assertEqual(product2.uri, '%s-copy-1' % product1.uri)
 
+    def test0070_menuitem(self):
+        '''
+        Test create menuitem for products
+        '''
+        with Transaction().start(DB_NAME, USER, CONTEXT):
+            self.setup_defaults()
+            app = self.get_app()
+            uom, = self.Uom.search([], limit=1)
+
+            template, = self.Template.create([{
+                'name': 'TestProduct',
+                'type': 'goods',
+                'list_price': Decimal('100'),
+                'cost_price': Decimal('100'),
+                'default_uom': uom.id,
+            }])
+            product, = self.Product.create([{
+                'template': template.id,
+                'displayed_on_eshop': True,
+                'uri': 'test-product',
+            }])
+
+            with app.test_request_context('/'):
+                rv = product.get_menu_item(max_depth=10)
+
+            self.assertEqual(rv['title'], product.name)
+
 
 def suite():
     "Test suite"

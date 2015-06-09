@@ -450,6 +450,21 @@ class Product:
         """
         return url_for('product.product.render', uri=self.uri, **kwargs)
 
+    def get_menu_item(self, max_depth):
+        """
+        Return dictionary with serialized node for menu item
+        {
+            title: <display name>,
+            link: <url>,
+            record: <instance of record> # if type_ is record
+        }
+        """
+        return {
+            'record': self,
+            'title': self.name,
+            'link': self.get_absolute_url(),
+        }
+
     def _json(self):
         """
         Return a JSON serializable dictionary of the product
